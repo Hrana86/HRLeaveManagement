@@ -1,4 +1,4 @@
-﻿using HRLeaveManagement.Application.DTOs.LeaveRequestDto;
+﻿using HRLeaveManagement.Application.DTOs.LeaveType;
 
 namespace HRLeaveManagement.Application.DTOs.LeaveRequest;
 public class LeaveRequestDto
