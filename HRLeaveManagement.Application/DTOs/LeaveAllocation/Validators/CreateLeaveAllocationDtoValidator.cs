@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using HRLeaveManagement.Application.Persistence.Contracts;
+using HRLeaveManagement.Application.Contracts.Persistence;
 
 namespace HRLeaveManagement.Application.DTOs.LeaveAllocation.Validators;
 public class CreateLeaveAllocationDtoValidator : AbstractValidator<CreateLeaveAllocationDto>
