@@ -19,6 +19,7 @@ public class MappingProfile : Profile
         CreateMap<LeaveAllocation, UpdateLeaveAllocationDto>().ReverseMap();
 
         CreateMap<LeaveType, LeaveTypeDto>().ReverseMap();
+        CreateMap<LeaveType, CreateLeaveTypeDto>().ReverseMap();
         CreateMap<LeaveAllocation, LeaveAllocationDto>().ReverseMap();
     }
 }
