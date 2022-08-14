@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using HRLeaveManagement.Application.Contracts.Persistence;
 using HRLeaveManagement.Application.DTOs.LeaveType;
-using HRLeaveManagement.Application.Exceptions;
 using HRLeaveManagement.Application.Features.LeaveTypes.Handlers.Commands;
 using HRLeaveManagement.Application.Features.LeaveTypes.Requests.Commands;
 using HRLeaveManagement.Application.Profiles;
+using HRLeaveManagement.Application.Responses;
 using HRLeaveManagement.Application.UnitTests.Mocks;
 using Moq;
 using Shouldly;
@@ -46,7 +46,7 @@ public class CreateLeaveTypeCommandHandlerTests
 
         var leaveTypes = await _mockRepo.Object.GetAll();
 
-        result.ShouldBeOfType<int>();
+        result.ShouldBeOfType<BaseCommandResponse>();
 
         leaveTypes.Count.ShouldBe(3);
     }
@@ -56,15 +56,11 @@ public class CreateLeaveTypeCommandHandlerTests
     {
         _leaveTypeDto.DefaultDays = -1;
 
-        var ex = await Should.ThrowAsync<ValidationException>(
-            async () => await _handler.Handle(new CreateLeaveTypeCommand() { LeaveTypeDto = _leaveTypeDto }, CancellationToken.None)
-            );
-
+        var result = await _handler.Handle(new CreateLeaveTypeCommand() { LeaveTypeDto = _leaveTypeDto }, CancellationToken.None);
 
         var leaveTypes = await _mockRepo.Object.GetAll();
 
         leaveTypes.Count.ShouldBe(2);
-
-        ex.ShouldNotBeNull();
+        result.ShouldBeOfType<BaseCommandResponse>();
     }
 }
