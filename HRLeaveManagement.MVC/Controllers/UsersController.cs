@@ -17,7 +17,7 @@ public class UsersController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Login(LoginVM login, string returnUrl)
+    public async Task<IActionResult> Login(LoginVM login, string? returnUrl)
     {
         if (ModelState.IsValid)
         {

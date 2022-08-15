@@ -12,6 +12,18 @@ public class LeaveAllocationRepository : GenericRepository<LeaveAllocation>, ILe
         _dbContext = dbContext;
     }
 
+    public async Task AddAllocations(List<LeaveAllocation> allocations)
+    {
+        await _dbContext.AddRangeAsync(allocations);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<bool> AllocationExists(string userId, int leaveTypeId, int period)
+    {
+        return await _dbContext.LeaveAllocations.AnyAsync(x => x.EmployeeId == userId
+        && x.LeaveTypeId == leaveTypeId && x.Period == period);
+    }
+
     public async Task<List<LeaveAllocation>> GetLeaveAllocationsWithDetails(int id)
     {
         var leaveAllocations = await _dbContext.LeaveAllocations

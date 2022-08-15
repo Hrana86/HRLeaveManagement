@@ -8,6 +8,14 @@ public class CreateLeaveAllocationDtoValidator : AbstractValidator<CreateLeaveAl
     public CreateLeaveAllocationDtoValidator(ILeaveTypeRepository leaveTypeRepository)
     {
         _leaveTypeRepository = leaveTypeRepository;
-        Include(new ILeaveAllocationDtoValidator(_leaveTypeRepository));
+
+        RuleFor(x => x.LeaveTypeId)
+            .GreaterThan(0)
+            .MustAsync(async (id, token) =>
+            {
+                var leaveTypesExists = await _leaveTypeRepository.Exists(id);
+                return leaveTypesExists;
+            })
+            .WithMessage("{PropertyName} does not exist.");
     }
 }
