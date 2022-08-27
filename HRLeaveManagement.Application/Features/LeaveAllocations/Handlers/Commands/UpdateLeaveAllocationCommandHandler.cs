@@ -18,20 +18,17 @@ public class UpdateLeaveAllocationCommandHandler : IRequestHandler<UpdateLeaveAl
         _mapper = mapper;
         _leaveTypeRepository = leaveTypeRepository;
     }
-    public async Task<Unit> Handle(UpdateLeaveAllocationCommand command, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(UpdateLeaveAllocationCommand request, CancellationToken cancellationToken)
     {
         var validator = new UpdateLeaveAllocationDtoValidator(_leaveTypeRepository);
-        var validationResult = await validator.ValidateAsync(command.LeaveAllocationDto);
+        var validationResult = await validator.ValidateAsync(request.LeaveAllocationDto);
 
-        if (!validationResult.IsValid)
-        {
+        if (validationResult.IsValid == false)
             throw new ValidationException(validationResult);
-        }
 
+        var leaveAllocation = await _leaveAllocationRepository.Get(request.LeaveAllocationDto.Id);
 
-        var leaveAllocation = await _leaveAllocationRepository.Get(command.LeaveAllocationDto.Id);
-
-        _mapper.Map(command.LeaveAllocationDto, leaveAllocation);
+        _mapper.Map(request.LeaveAllocationDto, leaveAllocation);
 
         await _leaveAllocationRepository.Update(leaveAllocation);
 

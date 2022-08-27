@@ -17,16 +17,15 @@ public class DeleteLeaveRequestCommandHandler : IRequestHandler<DeleteLeaveReque
         _mapper = mapper;
     }
 
-    public async Task<Unit> Handle(DeleteLeaveRequestCommand command, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(DeleteLeaveRequestCommand request, CancellationToken cancellationToken)
     {
-        var leaveRequest = await _leaveRequestRepository.Get(command.Id);
+        var leaveRequest = await _leaveRequestRepository.Get(request.Id);
 
         if (leaveRequest == null)
-        {
-            throw new NotFoundException(nameof(LeaveRequest), command.Id);
-        }
+            throw new NotFoundException(nameof(LeaveRequest), request.Id);
 
         await _leaveRequestRepository.Delete(leaveRequest);
+
         return Unit.Value;
     }
 }

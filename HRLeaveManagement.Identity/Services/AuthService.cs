@@ -1,4 +1,5 @@
-﻿using HRLeaveManagement.Application.Contracts.Identity;
+﻿using HRLeaveManagement.Application.Constants;
+using HRLeaveManagement.Application.Contracts.Identity;
 using HRLeaveManagement.Application.Models.Identity;
 using HRLeaveManagement.Identity.Models;
 using Microsoft.AspNetCore.Identity;
@@ -108,7 +109,7 @@ public class AuthService : IAuthService
             new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim("uid", user.Id)
+            new Claim(CustomClaimTypes.Uid, user.Id)
         }
         .Union(userClaims)
         .Union(roleClaims);

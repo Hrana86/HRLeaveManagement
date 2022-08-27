@@ -3,6 +3,7 @@ using HRLeaveManagement.Application.Features.LeaveAllocations.Requests.Commands;
 using HRLeaveManagement.Application.Features.LeaveAllocations.Requests.Queries;
 using HRLeaveManagement.Application.Responses;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HRLeaveManagement.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class LeaveAllocationsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -21,9 +23,9 @@ public class LeaveAllocationsController : ControllerBase
 
     // GET: api/<LeaveAllocationsController>
     [HttpGet]
-    public async Task<ActionResult<List<LeaveAllocationDto>>> Get()
+    public async Task<ActionResult<List<LeaveAllocationDto>>> Get(bool isLoggedInUser = false)
     {
-        var leaveAllocations = await _mediator.Send(new GetLeaveAllocationListRequest());
+        var leaveAllocations = await _mediator.Send(new GetLeaveAllocationListRequest() { IsLoggedInUser = isLoggedInUser });
         return Ok(leaveAllocations);
     }
 
