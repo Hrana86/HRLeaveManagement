@@ -15,13 +15,13 @@ namespace HRLeaveManagement.Application.UnitTests.LeaveTypes.Commands;
 public class CreateLeaveTypeCommandHandlerTests
 {
     private readonly IMapper _mapper;
-    private readonly Mock<ILeaveTypeRepository> _mockRepo;
     private readonly CreateLeaveTypeDto _leaveTypeDto;
     private readonly CreateLeaveTypeCommandHandler _handler;
+    private readonly Mock<IUnitOfWork> _mockUow;
 
     public CreateLeaveTypeCommandHandlerTests()
     {
-        _mockRepo = MockLeaveTypeRepository.GetLeaveTypeRepository();
+        _mockUow = MockUnitOfWork.GetUnitOfWork();
 
         var mapperConfig = new MapperConfiguration(x =>
         {
@@ -30,7 +30,7 @@ public class CreateLeaveTypeCommandHandlerTests
 
         _mapper = mapperConfig.CreateMapper();
 
-        _handler = new CreateLeaveTypeCommandHandler(_mockRepo.Object, _mapper);
+        _handler = new CreateLeaveTypeCommandHandler(_mockUow.Object, _mapper);
 
         _leaveTypeDto = new CreateLeaveTypeDto
         {
@@ -44,7 +44,7 @@ public class CreateLeaveTypeCommandHandlerTests
     {
         var result = await _handler.Handle(new CreateLeaveTypeCommand() { LeaveTypeDto = _leaveTypeDto }, CancellationToken.None);
 
-        var leaveTypes = await _mockRepo.Object.GetAll();
+        var leaveTypes = await _mockUow.Object.LeaveTypeRepository.GetAll();
 
         result.ShouldBeOfType<BaseCommandResponse>();
 
@@ -58,7 +58,7 @@ public class CreateLeaveTypeCommandHandlerTests
 
         var result = await _handler.Handle(new CreateLeaveTypeCommand() { LeaveTypeDto = _leaveTypeDto }, CancellationToken.None);
 
-        var leaveTypes = await _mockRepo.Object.GetAll();
+        var leaveTypes = await _mockUow.Object.LeaveTypeRepository.GetAll();
 
         leaveTypes.Count.ShouldBe(2);
         result.ShouldBeOfType<BaseCommandResponse>();

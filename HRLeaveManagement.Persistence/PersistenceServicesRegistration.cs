@@ -12,6 +12,7 @@ public static class PersistenceServicesRegistration
         services.AddDbContext<LeaveManagmentDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("Default")));
 
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
         services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();

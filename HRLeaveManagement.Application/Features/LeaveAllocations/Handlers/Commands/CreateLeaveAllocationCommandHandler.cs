@@ -9,20 +9,18 @@ using MediatR;
 namespace HRLeaveManagement.Application.Features.LeaveAllocations.Handlers.Commands;
 public class CreateLeaveAllocationCommandHandler : IRequestHandler<CreateLeaveAllocationCommand, BaseCommandResponse>
 {
-    private readonly ILeaveTypeRepository _leaveTypeRepository;
-    private readonly ILeaveAllocationRepository _leaveAllocationRepository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IUserService _userService;
 
-    public CreateLeaveAllocationCommandHandler(ILeaveAllocationRepository leaveAllocationRepository, ILeaveTypeRepository leaveTypeRepository, IUserService userService)
+    public CreateLeaveAllocationCommandHandler(IUserService userService, IUnitOfWork unitOfWork)
     {
-        _leaveAllocationRepository = leaveAllocationRepository;
-        _leaveTypeRepository = leaveTypeRepository;
         _userService = userService;
+        _unitOfWork = unitOfWork;
     }
     public async Task<BaseCommandResponse> Handle(CreateLeaveAllocationCommand request, CancellationToken cancellationToken)
     {
         var response = new BaseCommandResponse();
-        var validator = new CreateLeaveAllocationDtoValidator(_leaveTypeRepository);
+        var validator = new CreateLeaveAllocationDtoValidator(_unitOfWork.LeaveTypeRepository);
         var validationResult = await validator.ValidateAsync(request.LeaveAllocationDto);
 
         if (validationResult.IsValid == false)
@@ -33,13 +31,13 @@ public class CreateLeaveAllocationCommandHandler : IRequestHandler<CreateLeaveAl
         }
         else
         {
-            var leaveType = await _leaveTypeRepository.Get(request.LeaveAllocationDto.LeaveTypeId);
+            var leaveType = await _unitOfWork.LeaveTypeRepository.Get(request.LeaveAllocationDto.LeaveTypeId);
             var employees = await _userService.GetEmployees();
             var period = DateTime.Now.Year;
             var allocations = new List<LeaveAllocation>();
             foreach (var emp in employees)
             {
-                if (await _leaveAllocationRepository.AllocationExists(emp.Id, leaveType.Id, period))
+                if (await _unitOfWork.LeaveAllocationRepository.AllocationExists(emp.Id, leaveType.Id, period))
                     continue;
                 allocations.Add(new LeaveAllocation
                 {
@@ -50,8 +48,9 @@ public class CreateLeaveAllocationCommandHandler : IRequestHandler<CreateLeaveAl
                 });
             }
 
-            await _leaveAllocationRepository.AddAllocations(allocations);
+            await _unitOfWork.LeaveAllocationRepository.AddAllocations(allocations);
 
+            await _unitOfWork.Save();
             response.Success = true;
             response.Message = "Allocations Successful";
         }

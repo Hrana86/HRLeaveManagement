@@ -8,23 +8,24 @@ using MediatR;
 namespace HRLeaveManagement.Application.Features.LeaveRequests.Handlers.Commands;
 public class DeleteLeaveRequestCommandHandler : IRequestHandler<DeleteLeaveRequestCommand>
 {
-    private readonly ILeaveRequestRepository _leaveRequestRepository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public DeleteLeaveRequestCommandHandler(ILeaveRequestRepository leaveRequestRepository, IMapper mapper)
+    public DeleteLeaveRequestCommandHandler(IMapper mapper, IUnitOfWork unitOfWork)
     {
-        _leaveRequestRepository = leaveRequestRepository;
         _mapper = mapper;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Unit> Handle(DeleteLeaveRequestCommand request, CancellationToken cancellationToken)
     {
-        var leaveRequest = await _leaveRequestRepository.Get(request.Id);
+        var leaveRequest = await _unitOfWork.LeaveRequestRepository.Get(request.Id);
 
         if (leaveRequest == null)
             throw new NotFoundException(nameof(LeaveRequest), request.Id);
 
-        await _leaveRequestRepository.Delete(leaveRequest);
+        await _unitOfWork.LeaveRequestRepository.Delete(leaveRequest);
+        await _unitOfWork.Save();
 
         return Unit.Value;
     }

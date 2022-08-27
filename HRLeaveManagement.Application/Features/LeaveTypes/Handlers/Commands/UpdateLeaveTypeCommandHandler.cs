@@ -8,12 +8,12 @@ using MediatR;
 namespace HRLeaveManagement.Application.Features.LeaveTypes.Handlers.Commands;
 public class UpdateLeaveTypeCommandHandler : IRequestHandler<UpdateLeaveTypeCommand, Unit>
 {
-    private readonly ILeaveTypeRepository _leaveTypeRepository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public UpdateLeaveTypeCommandHandler(ILeaveTypeRepository leaveTypeRepository, IMapper mapper)
+    public UpdateLeaveTypeCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        _leaveTypeRepository = leaveTypeRepository;
+        _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
 
@@ -27,11 +27,12 @@ public class UpdateLeaveTypeCommandHandler : IRequestHandler<UpdateLeaveTypeComm
             throw new ValidationException(validationResult);
         }
 
-        var leaveType = await _leaveTypeRepository.Get(command.LeaveTypeDto.Id);
+        var leaveType = await _unitOfWork.LeaveTypeRepository.Get(command.LeaveTypeDto.Id);
 
         _mapper.Map(command.LeaveTypeDto, leaveType);
 
-        await _leaveTypeRepository.Update(leaveType);
+        await _unitOfWork.LeaveTypeRepository.Update(leaveType);
+        await _unitOfWork.Save();
 
         return Unit.Value;
     }

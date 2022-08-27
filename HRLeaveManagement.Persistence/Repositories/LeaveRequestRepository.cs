@@ -16,7 +16,6 @@ public class LeaveRequestRepository : GenericRepository<LeaveRequest>, ILeaveReq
     {
         leaveRequest.Approved = approvalStatus;
         _dbContext.Entry(leaveRequest).State = EntityState.Modified;
-        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<List<LeaveRequest>> GetLeaveRequestsWithDetails()
