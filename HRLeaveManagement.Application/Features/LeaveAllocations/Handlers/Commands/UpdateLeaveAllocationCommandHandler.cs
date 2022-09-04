@@ -26,6 +26,11 @@ public class UpdateLeaveAllocationCommandHandler : IRequestHandler<UpdateLeaveAl
 
         var leaveAllocation = await _unitOfWork.LeaveAllocationRepository.Get(request.LeaveAllocationDto.Id);
 
+        if (leaveAllocation == null)
+        {
+            throw new NotFoundException(nameof(leaveAllocation), request.LeaveAllocationDto.Id);
+        }
+
         _mapper.Map(request.LeaveAllocationDto, leaveAllocation);
 
         await _unitOfWork.LeaveAllocationRepository.Update(leaveAllocation);

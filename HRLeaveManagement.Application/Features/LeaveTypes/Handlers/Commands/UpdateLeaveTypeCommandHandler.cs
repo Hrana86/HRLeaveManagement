@@ -29,6 +29,11 @@ public class UpdateLeaveTypeCommandHandler : IRequestHandler<UpdateLeaveTypeComm
 
         var leaveType = await _unitOfWork.LeaveTypeRepository.Get(command.LeaveTypeDto.Id);
 
+        if (leaveType == null)
+        {
+            throw new NotFoundException(nameof(leaveType), command.LeaveTypeDto.Id);
+        }
+
         _mapper.Map(command.LeaveTypeDto, leaveType);
 
         await _unitOfWork.LeaveTypeRepository.Update(leaveType);

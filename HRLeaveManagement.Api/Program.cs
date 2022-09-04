@@ -1,3 +1,4 @@
+using HRLeaveManagement.Api.Middleware;
 using HRLeaveManagement.Application;
 using HRLeaveManagement.Identity;
 using HRLeaveManagement.Infrastructure;
@@ -73,6 +74,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthentication();
 
